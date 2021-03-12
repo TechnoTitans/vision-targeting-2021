@@ -11,6 +11,7 @@ COMMS_METHOD = "usb"
 TARGET_WIDTH = 39.25
 TARGET_HEIGHT = 17.00
 
+# TODO: Check FOV Values
 HFOV = 62.3  # 70.8 # horizontal field of view
 VFOV = 55.6  # vertical field of view
 
@@ -95,6 +96,15 @@ def getAngleY(targetCY):
     return angleY
 
 
+def beam(values):  # function that shines the LED on the camera
+    if ((values[3] >= -5) and (values[3] <= 5)) and (values[3] != -1):
+        green.on()
+    elif values != [-1, -1, -1, -1, -1, -1]:
+        blue.on()
+    elif values == [-1, -1, -1, -1, -1, -1]:
+        red.on()
+
+
 def getUnfilteredValues(img):
     blobs = img.find_blobs(THRESHOLDS, area_threshold=8)
 
@@ -129,15 +139,6 @@ def getUnfilteredValues(img):
         return valuesRobot
 
     return [-1, -1, -1, -1, -1, -1]
-
-
-def beam(values):  # function that shines the LED on the camera
-    if ((values[3] >= -5) and (values[3] <= 5)) and (values[3] != -1):
-        green.on()
-    elif values != [-1, -1, -1, -1, -1, -1]:
-        blue.on()
-    elif values == [-1, -1, -1, -1, -1, -1]:
-        red.on()
 
 
 while True:
