@@ -7,15 +7,15 @@ from pyb import USB_VCP, CAN
 import pyb
 
 # Specify communication method: "print" "usb" "can"
-COMMS_METHOD = "usb"
+COMMS_METHOD = "print"
 TARGET_WIDTH = 39.25
 TARGET_HEIGHT = 17.00
 
 # make USB_VCP object
-# this lets us know if targets are being 
-# detected without having to print it and 
+# this lets us know if targets are being
+# detected without having to print it and
 # we can see if the target is aligned as well
-usb = USB_VCP() 
+usb = USB_VCP()
 red = pyb.LED(1)
 green = pyb.LED(2)
 blue = pyb.LED(3)
@@ -35,7 +35,7 @@ KMAN = 0.065 # constant for exposure setting
 autoExposureSum = 0
 readExposureNum = 10
 for i in range(readExposureNum):
-autoExposureSum += sensor.get_exposure_us()
+    autoExposureSum += sensor.get_exposure_us()
 
 autoExposure = autoExposureSum/readExposureNum
 manualExposure = int(autoExposure * KMAN) # scale factor for decreasing autoExposure
@@ -134,7 +134,7 @@ def getUnfilteredValues(wa, ha, img):
             return None
         return valuesRobot
 
-def beam(values): # function that shines the LED on the camera 
+def beam(values): # function that shines the LED on the camera
     if(((values[3] >= -5) and (values[3] <= 5)) and (values[3] != -1)):
         green.on()
     elif(values != [-1,-1,-1,-1,-1,-1]):
@@ -144,17 +144,27 @@ def beam(values): # function that shines the LED on the camera
 
 
 while(True):
-    img = sensor.snapshot()
+    #img = sensor.snapshot()
+
+    img = image.Image("Images\mid210-light-600.bmp", copy_to_fb=True)
 
     # params: width actual of target and height actual of target
     # returns: centerX, centerY, distance, angleX, angleY, blob width pixels
     values = getUnfilteredValues(TARGET_WIDTH, TARGET_HEIGHT , img)
+
+    hDistance = 210
+    targetHeight = 78.25
+    actualValue = math.sqrt(hDistance ** 2 + targetHeight ** 2)
+    TheoreticalValue = values[2]
     if(values == None):
         values = [-1,-1,-1,-1,-1,-1] # makes values this when there is no blob detected
     beam(values)
 
     if(COMMS_METHOD == "print"):
             print(values)
+            print("Theoretical Distance: " + str(TheoreticalValue))
+            print("Actual Distance: " + str(actualValue) + "\n")
+            time.sleep(0.6)
     elif(COMMS_METHOD == "usb"): # sending the data via USB serial to the robot
         # values = memoryview(values)
         usb.send(ustruct.pack("d", values[0], values[1], values[2], values[3], values[4], values[5]))
