@@ -1,4 +1,4 @@
-# Target_lens_corr.py by Kaushal Sambanna created on 12/03/2021
+# target_lens_corr.py by Kaushal Sambanna created on 12/03/2021
 
 import sensor
 import image

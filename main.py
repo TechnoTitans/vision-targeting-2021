@@ -7,7 +7,7 @@ from pyb import USB_VCP, CAN
 import pyb
 
 # Specify communication method: "print" "usb" "can"
-COMMS_METHOD = "usb"
+COMMS_METHOD = "print"
 TARGET_WIDTH = 39.25
 TARGET_HEIGHT = 17.00
 
@@ -35,17 +35,7 @@ sensor.set_framesize(sensor.QVGA)  # or sensor.QVGA (or others)
 sensor.skip_frames(time=2000)  # Let new settings take affect.
 clock = time.clock()
 
-# TODO: See if we even need this
-# setting autoexposure automatically
-KMAN = 0.065  # constant for exposure setting
-autoExposureSum = 0
-readExposureNum = 10
-for i in range(readExposureNum):
-    autoExposureSum += sensor.get_exposure_us()
-
-autoExposure = autoExposureSum / readExposureNum
-manualExposure = int(autoExposure * KMAN)  # scale factor for decreasing autoExposure
-sensor.set_auto_exposure(False, manualExposure)  # autoset exposures
+sensor.set_auto_exposure(False, 300)
 
 
 def drawScope(img, blob):  # draws a circle and crosshair where the center calculations are
@@ -76,7 +66,7 @@ def getDistanceVFOV(blob):  # gets the distance with the actual width/height of 
 
 
 def getDistanceHFOV(blob):
-    constant_term = (TARGET_WIDTH * img.height()) / (2 * (math.tan(math.radians(HFOV / 2))))
+    constant_term = (TARGET_WIDTH * img.width()) / (2 * (math.tan(math.radians(HFOV / 2))))
     horizontal_distance = constant_term / blob.w()
     corrected_H_distance = horizontal_distance + ((horizontal_distance * 0.22018465) - 10.68580068)
     return corrected_H_distance
@@ -148,8 +138,8 @@ while True:
     # params: image
     # returns: centerX, centerY, distance, angleX, angleY, blob width pixels
     values = getUnfilteredValues(img)
-
-    beam(values)
+    # img.draw_line(SCREEN_CENTERP, VERTICAL_CENTERP-100, SCREEN_CENTERP, VERTICAL_CENTERP + 150)
+    # beam(values)
 
     if COMMS_METHOD == "print":
         print(values)
