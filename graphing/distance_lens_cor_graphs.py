@@ -5,7 +5,7 @@ import numpy as np
 df = pd.read_csv("../data/DistanceWithLensCorrection2.csv")
 
 for name, df_group in df.groupby("Correction_Strength"):
-    if 1 <= name <= 1.25:
+    if name > 0:
         df_group = df_group.reset_index()
 
         plt.plot(df_group["Real_Distance"], df_group["Percent_Error"]*100, label=name)
